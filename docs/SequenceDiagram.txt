@@ -1,0 +1,22 @@
+participant User
+participant AvgWords
+participant Musicbrainz
+participant LyricsOvh
+
+User->AvgWords:Enter artist name
+AvgWords->Musicbrainz:Search artist
+Musicbrainz-->AvgWords:Return search results
+AvgWords->Musicbrainz:Lookup artist releases
+Musicbrainz-->AvgWords:Return releases
+AvgWords->AvgWords:Filter duplicate releases
+loop recordings.length
+AvgWords->Musicbrainz:Get release's recordings
+Musicbrainz-->AvgWords:Return recordings
+end
+AvgWords->AvgWords:Filter duplicate tracks
+loop tracks.length
+AvgWords->LyricsOvh:Get lyrics
+LyricsOvh-->AvgWords:Return lyrics
+end
+AvgWords->AvgWords:Calculate average words per track
+AvgWords->User:Display average words per song
