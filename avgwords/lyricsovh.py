@@ -33,3 +33,32 @@ class LyricsOvhClient():
             raise ValueError # raise ValueError to abstract away simplejson
 
         return retval
+
+class LyricsOvhHandler():
+    """
+    Handler for abstracting LyricsOvh endpoint functionality
+    """
+
+    def __init__(self, client):
+        self.client = client
+
+    def get_lyric_word_count(self, artist, title):
+        """
+        Gets the lyrics to a song from LyricsOvh and returns its word count
+
+        :param      artist      name of the artist
+        :param      title       title of the track whose lyrics to search for
+
+        :returns    word count if lyrics found, otherwise None
+        """
+        try:
+            lyrics_json = self.client.get_lyrics(artist, title)
+        except requests.exceptions.HTTPError:
+            # No lyrics were found for this song
+            return None
+
+        # TODO: add handling for common non-words, e.g. ( 2x), (3x), (x3), .., - etc.
+
+        word_count = len(lyrics_json['lyrics'].split())
+
+        return word_count
