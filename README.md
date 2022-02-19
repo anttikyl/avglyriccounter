@@ -41,7 +41,7 @@ In addition to the requests made to MusicBrainz, each unique track's lyrics will
 - Filter out live and "best of" type albums to avoid unnecessary MusicBrainz API requests
 - Improve lyrics parsing to ignore non-word strings and to understand special cases
 - There doesn't seem to be a standardized format for the lyrics, but from looking at the results, well educated guesses can be taken to improve result accuracy
-- Write unit tests for MusicBrainzClient and LyricsOvhClient
+- Write unit tests for AvgLyricCounter, MusicBrainzClient and LyricsOvhClient
 
 ## Related links
 [MusicBrainz API reference](https://musicbrainz.org/doc/MusicBrainz_API)
