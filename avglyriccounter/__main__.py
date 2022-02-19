@@ -1,20 +1,44 @@
-from musicbrainz import MusicBrainzClient, MusicBrainzHandler
-from lyricsovh import LyricsOvhClient, LyricsOvhHandler
+import musicbrainz
+import lyricsovh
 import requests
+import sys
+import logging
+
+logging.basicConfig(level=logging.WARNING,
+                    format="%(asctime)s %(levelname)s %(filename)s:%(lineno)s %(funcName)s() %(message)s")
+log = logging.getLogger("avglyriccounter")
+
+# Handle command line arguments
+def handle_command_line_args():
+    for i, arg in enumerate(sys.argv[1:]):
+        if arg == "-v":
+            log.setLevel(logging.INFO)
+        elif arg == "-vv":
+            log.setLevel(logging.DEBUG)
+        else:
+            log.error("Unexpected command line argument '" + arg + "'")
+            exit()
+
+handle_command_line_args()
 
 print("Enter artist name:")
 artist_name = input()
+print()
 
 # Create MusicBrainz handler
-mb_client = MusicBrainzClient()
-mb_handler = MusicBrainzHandler(mb_client)
+mb_client = musicbrainz.MusicBrainzClient()
+mb_handler = musicbrainz.MusicBrainzHandler(mb_client)
 
 # Create LyricsOvh handler
-lo_client = LyricsOvhClient()
-lo_handler = LyricsOvhHandler(lo_client)
+lo_client = lyricsovh.LyricsOvhClient()
+lo_handler = lyricsovh.LyricsOvhHandler(lo_client)
 
 # Get the artist's MusicBrainz ID
 artist_mbid = mb_handler.get_artist_mbid(artist_name)
+
+if artist_mbid == '':
+    log.error("Could not find MBID for artist '" + artist_name + "', exiting...")
+    exit()
 
 # Get all the release IDs for the artist
 release_ids = mb_handler.get_release_ids(artist_mbid)

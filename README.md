@@ -19,6 +19,13 @@ Use with:
 python3 avglyriccounter
 ```
 
+### Flags
+The following optional flags are available:
+```
+    -v      Increase log level to INFO
+    -vv     Increase log level to DEBUG
+```
+
 ## Testing
 Run unit tests with:
 ```bash
@@ -32,7 +39,6 @@ In addition to the requests made to MusicBrainz, each unique track's lyrics will
 
 ## Potential improvements
 - Filter out live and "best of" type albums to avoid unnecessary MusicBrainz API requests
-- Add info/debug logging with a logging module, using -v and -vv flags on start
 - Improve lyrics parsing to ignore non-word strings and to understand special cases
 - There doesn't seem to be a standardized format for the lyrics, but from looking at the results, well educated guesses can be taken to improve result accuracy
 - Write unit tests for MusicBrainzClient and LyricsOvhClient
