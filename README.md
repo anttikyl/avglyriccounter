@@ -16,14 +16,21 @@ pip install -r requirements.txt
 ## Usage
 Use with:
 ```bash
-python3 avglyriccounter
+python3 avglyriccounter <artist_name> <options>
+```
+Note that with multi-word artist names, double quotes should be used.
+
+For example:
+```bash
+python3 avglyriccounter "iron maiden"
 ```
 
 ### Flags
 The following optional flags are available:
 ```
-    -v      Increase log level to INFO
-    -vv     Increase log level to DEBUG
+    -h --help   Display usage
+    -v          Increase log level to INFO
+    -vv         Increase log level to DEBUG
 ```
 
 ## Testing
@@ -40,9 +47,10 @@ In addition to the requests made to MusicBrainz, each unique track's lyrics will
 ## Potential improvements
 - Filter out live and "best of" type albums to avoid unnecessary MusicBrainz API requests
 - Improve lyrics parsing to ignore non-word strings and to understand special cases
-- There doesn't seem to be a standardized format for the lyrics, but from looking at the results, well educated guesses can be taken to improve result accuracy
+    - There doesn't seem to be a standardized format for the lyrics, but from looking at the results, well educated guesses can be taken to improve result accuracy
 - Write unit tests for AvgLyricCounter, MusicBrainzClient and LyricsOvhClient
 
 ## Related links
 [MusicBrainz API reference](https://musicbrainz.org/doc/MusicBrainz_API)
+
 [LyricsOvh API reference](https://lyricsovh.docs.apiary.io/#reference)
