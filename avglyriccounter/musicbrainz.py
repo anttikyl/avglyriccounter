@@ -138,7 +138,11 @@ class MusicBrainzHandler():
 
         :returns    artist MBID if artist was found, otherwise empty string
         :raises     MusicBrainzHandlerError on any caught exception
+        :raises     TypeError if the arg is not a string
         """
+
+        if type(artist_name) != str:
+            raise TypeError("Unsupported type for arg 'artist_name'")
 
         try:
             artist_json = self.client.search_artist(artist_name)
@@ -167,7 +171,11 @@ class MusicBrainzHandler():
 
         :returns    list of release_ids, empty list if none found
         :raises     MusicBrainzHandlerError on any caught exception
+        :raises     TypeError if the arg is not a string
         """
+
+        if type(artist_mbid) != str:
+            raise TypeError("Unsupported type for arg 'artist_mbid'")
 
         try:
             releases_json = self.client.get_artist_with_releases(artist_mbid)
@@ -194,7 +202,12 @@ class MusicBrainzHandler():
 
         :returns    list of tracks on the given release
         :raises     MusicBrainzHandlerError on any caught exception
+        :raises     TypeError if the arg is not a string
         """
+
+        if type(release_id) != str:
+            raise TypeError("Unsupported type for arg 'release_id'")
+
         tracks = []
 
         try:

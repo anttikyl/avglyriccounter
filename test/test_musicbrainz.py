@@ -40,6 +40,17 @@ class TestMusicBrainzHandler(unittest.TestCase):
         with self.assertRaises(MusicBrainzHandlerError):
              self.mb_handler.get_artist_mbid('')
 
+    def test_get_artist_mbid_invalid_input_type(self):
+        # Test a couple of invalid input types
+        with self.assertRaises(TypeError):
+            self.mb_handler.get_artist_mbid(["artist"])
+
+        with self.assertRaises(TypeError):
+            self.mb_handler.get_artist_mbid(None)
+
+        with self.assertRaises(TypeError):
+            self.mb_handler.get_artist_mbid(1)
+
     # ------------------------------------------------------------------------------------------------
     # MusicBrainzHandler.get_release_ids()
 
@@ -75,12 +86,22 @@ class TestMusicBrainzHandler(unittest.TestCase):
         with self.assertRaises(MusicBrainzHandlerError):
              self.mb_handler.get_release_ids('')
 
-
     def test_get_release_ids_value_error(self):
         self.mock_client.get_artist_with_releases.side_effect = ValueError
 
         with self.assertRaises(MusicBrainzHandlerError):
              self.mb_handler.get_release_ids('')
+
+    def test_get_release_ids_invalid_input_type(self):
+        # Test a couple of invalid input types
+        with self.assertRaises(TypeError):
+            self.mb_handler.get_release_ids(["7f0d27cb-d636-40c3-a92d-cd44e880658e"])
+
+        with self.assertRaises(TypeError):
+            self.mb_handler.get_release_ids(None)
+
+        with self.assertRaises(TypeError):
+            self.mb_handler.get_release_ids(1)
 
     # ------------------------------------------------------------------------------------------------
     # MusicBrainzHandler.get_tracks()
@@ -91,7 +112,7 @@ class TestMusicBrainzHandler(unittest.TestCase):
 
         # In a success case, the returned value is a list containing release_ids
         actual = self.mb_handler.get_tracks('42929a80-440e-4e25-84ff-e6435a690f15')
-        self.assertEqual(actual, ['Infection', 'Realms', 'Eyes: Closed', 'Eyes: Open', 'Oscillator', 'Apparition', 'Predator'])
+        self.assertEqual(actual, ['infection', 'realms', 'eyes: closed', 'eyes: open', 'oscillator', 'apparition', 'predator'])
 
     def test_get_tracks_none_found(self):
         # It's unlikely that a release that has been added to the database does not have any tracks on it,
@@ -114,3 +135,13 @@ class TestMusicBrainzHandler(unittest.TestCase):
         with self.assertRaises(MusicBrainzHandlerError):
              self.mb_handler.get_tracks('')
 
+    def test_get_tracks_invalid_input_type(self):
+        # Test a couple of invalid input types
+        with self.assertRaises(TypeError):
+            self.mb_handler.get_tracks(["0faafa6d-c03e-4aa7-ac5e-094474c344d0"])
+
+        with self.assertRaises(TypeError):
+            self.mb_handler.get_tracks(None)
+
+        with self.assertRaises(TypeError):
+            self.mb_handler.get_tracks(1)
