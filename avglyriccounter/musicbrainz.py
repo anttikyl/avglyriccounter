@@ -1,6 +1,9 @@
 import requests
 import threading
 from time import sleep
+import logging
+
+log = logging.getLogger("avglyriccounter")
 
 class MusicBrainzClient():
     """
@@ -23,6 +26,7 @@ class MusicBrainzClient():
         """
         sleep(1)
         self.lock.release()
+        log.debug("Released MusicBrainzClient lock")
 
     def __make_request(self, url):
         """
@@ -33,6 +37,9 @@ class MusicBrainzClient():
         """
 
         self.lock.acquire()
+        log.debug("Acquired MusicBrainzClient lock")
+
+        log.debug("Sending GET request to " + url)
         res = requests.get(url, headers=self.headers)
 
         # Set off a lock release with a 1s sleep timer in another thread
@@ -146,6 +153,8 @@ class MusicBrainzHandler():
         except:
             raise MusicBrainzHandlerError
 
+        log.info("Found artist MBID " + artist_mbid + " for artist " + artist_name)
+
         return artist_mbid
 
     def get_release_ids(self, artist_mbid):
@@ -173,6 +182,8 @@ class MusicBrainzHandler():
         except:
             raise MusicBrainzHandlerError
 
+        log.info("Found releases " + str(list(releases.keys())) + " for artist_mbid " + artist_mbid)
+
         return list(releases.values())
 
     def get_tracks(self, release_id):
@@ -196,5 +207,7 @@ class MusicBrainzHandler():
                     tracks.append(track['title'].lower())
         except:
             raise MusicBrainzHandlerError
+
+        log.info("Found tracks " + str(tracks) + " for release_id " + release_id)
 
         return tracks

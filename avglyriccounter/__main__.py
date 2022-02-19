@@ -63,10 +63,14 @@ for track in tracks:
 total_word_count = sum(word_counts)
 found_lyrics = len(word_counts)
 
+log.info("Found " + str(len(tracks)) + " songs, of which " + str(found_lyrics) + " had recorded lyrics")
+
 # Check that we're not dividing by zero, then calculate the average word count of the found lyrics
 if total_word_count > 0 and found_lyrics > 0:
     average_word_count = total_word_count / found_lyrics
 else:
     average_word_count = 0
 
-print("Found " + str(found_lyrics) + " songs with lyrics. Their average word count is " + str(average_word_count))
+log.info("The average word count of the found songs is " + str(average_word_count))
+
+print(average_word_count)

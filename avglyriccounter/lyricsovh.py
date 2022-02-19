@@ -1,4 +1,7 @@
 import requests
+import logging
+
+log = logging.getLogger("avglyriccounter")
 
 class LyricsOvhClient():
     """
@@ -24,6 +27,7 @@ class LyricsOvhClient():
 
         url = self.base_url + str(artist) + "/" + str(title)
 
+        log.debug("Sending GET request to " + url)
         res = requests.get(url)
         res.raise_for_status()
 
@@ -69,5 +73,7 @@ class LyricsOvhHandler():
         # TODO: trim "Paroles de la chanson [track] par [artist]" if present
 
         word_count = len(lyrics_json['lyrics'].split())
+
+        log.info("The lyric word count (" + str(word_count) + ") for " + artist + " - " + title)
 
         return word_count
