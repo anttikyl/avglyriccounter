@@ -173,7 +173,7 @@ class MusicBrainzHandler():
         except:
             raise MusicBrainzHandlerError
 
-        return releases.values()
+        return list(releases.values())
 
     def get_tracks(self, release_id):
         """
@@ -187,7 +187,7 @@ class MusicBrainzHandler():
         tracks = []
 
         try:
-            recordings_json = mb_client.get_release_with_recordings(release_id)
+            recordings_json = self.client.get_release_with_recordings(release_id)
 
             # Traverse through the 'media' array, which contains for example CDs 
             for media in recordings_json['media']:
