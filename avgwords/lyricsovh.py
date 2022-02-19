@@ -18,11 +18,11 @@ class LyricsOvhClient():
         :param      title       title of the track whose lyrics to search for
 
         :returns    json response body returned from LyricsOvh API
-        :raises     requests.HttpError if one occurred
+        :raises     requests.exceptions.HTTPError if one occurred
         :raises     ValueError if the response is not decodable json
         """
 
-        url = self.base_url + "/" + artist + "/" + title
+        url = self.base_url + str(artist) + "/" + str(title)
 
         res = requests.get(url)
         res.raise_for_status()
@@ -50,14 +50,23 @@ class LyricsOvhHandler():
         :param      title       title of the track whose lyrics to search for
 
         :returns    word count if lyrics found, otherwise None
+        :raises     TypeError if the args are not strings
         """
+
+        if type(artist) != str or type(title) != str:
+            raise TypeError("Unsupported type(s) for args 'artist' and 'title'")
+
         try:
             lyrics_json = self.client.get_lyrics(artist, title)
         except requests.exceptions.HTTPError:
             # No lyrics were found for this song
             return None
+        except ValueError:
+            # JSON decoding error
+            return None
 
         # TODO: add handling for common non-words, e.g. ( 2x), (3x), (x3), .., - etc.
+        # TODO: trim "Paroles de la chanson [track] par [artist]" if present
 
         word_count = len(lyrics_json['lyrics'].split())
 
