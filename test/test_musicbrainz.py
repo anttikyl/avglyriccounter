@@ -1,7 +1,7 @@
 import unittest
 from unittest.mock import Mock
 
-from avgwords.musicbrainz import MusicBrainzHandler, MusicBrainzHandlerError
+from avglyriccounter.musicbrainz import MusicBrainzHandler, MusicBrainzHandlerError
 from requests.exceptions import HTTPError
 
 class TestMusicBrainzHandler(unittest.TestCase):

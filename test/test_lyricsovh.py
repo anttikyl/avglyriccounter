@@ -1,7 +1,7 @@
 import unittest
 from unittest.mock import Mock
 
-from avgwords.lyricsovh import LyricsOvhHandler
+from avglyriccounter.lyricsovh import LyricsOvhHandler
 from requests.exceptions import HTTPError
 
 class TestLyricsOvhHandler(unittest.TestCase):
