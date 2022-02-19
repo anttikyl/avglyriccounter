@@ -166,7 +166,7 @@ class MusicBrainzHandler():
             releases = {}
 
             for release in releases_json['releases']:
-                title = release['title']
+                title = release['title'].lower()
                 if title not in releases.keys():
                     # Only add unique album names
                     releases[title] = release['id']
@@ -193,7 +193,7 @@ class MusicBrainzHandler():
             for media in recordings_json['media']:
                 # Add all the track on the media to a list
                 for track in media['tracks']:
-                    tracks.append(track['title'])
+                    tracks.append(track['title'].lower())
         except:
             raise MusicBrainzHandlerError
 
