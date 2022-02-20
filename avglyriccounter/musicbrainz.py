@@ -262,11 +262,12 @@ class MusicBrainzHandler():
 
         return list(releases.values())
 
-    def get_tracks(self, release_id):
+    def get_tracks(self, release_id, exclusion_filters):
         """
-        Gets the tracks found on the given release
+        Gets the tracks found on the given release, in lower case characters
 
-        :param      release_id      ID of the release whose tracks to get
+        :param      release_id          ID of the release whose tracks to get
+        :param      exclusion_filters   list of strings to use to exclude tracks with at least one of them in the title
 
         :returns    list of tracks on the given release
         :raises     MusicBrainzHandlerError on any caught exception
@@ -281,14 +282,20 @@ class MusicBrainzHandler():
         try:
             recordings_json = self.client.get_release_with_recordings(release_id)
 
+            tracks_on_release = 0
             # Traverse through the 'media' array, which contains for example CDs 
             for media in recordings_json['media']:
+                tracks_on_release += len(media['tracks'])
                 # Add all the track on the media to a list
                 for track in media['tracks']:
-                    tracks.append(track['title'].lower())
+                    track_title = track['title'].lower()
+                    # Don't add tracks with any of the exclusion filters in their titles
+                    if not any(x in track_title for x in exclusion_filters):
+                        tracks.append(track_title)
         except:
             raise MusicBrainzHandlerError
 
-        log.info("Found tracks " + str(tracks) + " for release_id " + release_id)
+        excluded_track_count = tracks_on_release - len(tracks)
+        log.info("Found " + str(len(tracks)) + " tracks: " + str(tracks) + " for release_id " + release_id + " (excluded " + str(excluded_track_count) + " tracks)" )
 
         return tracks

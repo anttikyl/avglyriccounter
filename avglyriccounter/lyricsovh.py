@@ -71,6 +71,7 @@ class LyricsOvhHandler():
 
         # TODO: add handling for common non-words, e.g. ( 2x), (3x), (x3), .., - etc.
         # TODO: trim "Paroles de la chanson [track] par [artist]" if present
+        # TODO: exclude if lyrics is [Instrumental]
 
         word_count = len(lyrics_json['lyrics'].split())
 

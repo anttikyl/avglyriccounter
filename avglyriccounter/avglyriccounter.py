@@ -27,10 +27,14 @@ class AvgLyricCounter():
 
         :returns    a list of unique track names from the given ids, empty if none found
         """
+
+        # exclude tracks with these strings in their titles
+        exclusion_filters = ['(instrumental)', '(live)']
+
         # Get the names of all of the tracks on the record
         tracks = []
         for release_id in release_ids:
-            tracks +=  self.mb_handler.get_tracks(release_id)
+            tracks += self.mb_handler.get_tracks(release_id, exclusion_filters)
 
         # Filter out duplicate track names
         return list(set(tracks))

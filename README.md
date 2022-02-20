@@ -45,10 +45,14 @@ It takes a long time to get the results, mainly because the MusicBrainz API has 
 In addition to the requests made to MusicBrainz, each unique track's lyrics will be requested separately from LyricsOvh, potentially raising the count of requests made to hundreds. There is no rate limit for LyricsOvh, but the server responses do take a while.
 
 ## Potential improvements
-- Filter out live and "best of" type albums to avoid unnecessary MusicBrainz API requests
 - Improve lyrics parsing to ignore non-word strings and to understand special cases
-    - There doesn't seem to be a standardized format for the lyrics, but from looking at the results, well educated guesses can be taken to improve result accuracy
+    - There doesn't seem to be a standardized format for the lyrics, but from looking at the results, well educated guesses can be taken to improve result accuracy, e.g.
+        - '(2x)' can be used to repeat some lines to get an accurate lyric count
+        - Remove non-alphabetical characters, for example '...'
+        - Ignore anything in angle brackets, oftentimes used to indicate instrumental songs, lyric credits or writer credits
+        - Many lyrics start with "Paroles de la chanson [track] par [artist]" in them, which is unnecessary and can be removed to increase accuracy
 - Write unit tests for AvgLyricCounter, MusicBrainzClient and LyricsOvhClient
+- Consider automated end-to-end testing
 
 ## Related links
 [MusicBrainz API reference](https://musicbrainz.org/doc/MusicBrainz_API)
