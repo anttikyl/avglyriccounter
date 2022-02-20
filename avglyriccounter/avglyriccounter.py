@@ -82,7 +82,7 @@ class AvgLyricCounter():
             raise MissingData()
 
         # Get all the release IDs for the artist
-        release_ids =  self.mb_handler.get_release_ids(artist_mbid)
+        release_ids = self.mb_handler.get_release_ids(artist_name, artist_mbid)
 
         if len(release_ids) == 0:
             log.error("No releases found for artist '" + artist_name + "'")

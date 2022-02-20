@@ -120,6 +120,47 @@ class MusicBrainzClient():
 
         return retval
 
+    def search_artist_release_groups(self, artist_name, **kwargs):
+        """ /release-group/?query=artist:<ARTIST>
+
+        Searches for an artist's release groups by artist name
+
+        :param      artist_name             name of the artist to search for
+
+        Kwargs:
+            exclude_live (bool)             whether to exclude live releases from the search
+            exclude_compilation (bool)      whether to exclude compilation releases from the search
+            exclude_remix (bool)            whether to exclude remix releases from the search
+            exclude_demo  (bool)            whether to exclude demo releases from the search
+
+        :returns    json response body returned from MusicBrainz
+        :raises     requests.HttpError if the returned HTTP status code was 4xx/5xx
+        :raises     ValueError if the response is not decodable json
+        """
+
+        url = self.base_url + "release-group?limit=100&fmt=json&query=artist:" + artist_name + " AND primarytype:\"album\""
+        if 'exclude_live' in kwargs and kwargs['exclude_live'] == True:
+            url += " AND NOT secondarytype:\"Live\""
+
+        if 'exclude_compilation' in kwargs and kwargs['exclude_compilation'] == True:
+            url += " AND NOT secondarytype:\"Compilation\""
+
+        if 'exclude_remix' in kwargs and kwargs['exclude_remix'] == True:
+            url += " AND NOT secondarytype:\"Remix\""
+
+        if 'exclude_demo' in kwargs and kwargs['exclude_demo'] == True:
+            url += " AND NOT secondarytype:\"Demo\""
+
+        res = self.__make_request(url)
+        res.raise_for_status()
+
+        try:
+            retval = res.json()
+        except ValueError: # includes simplejson.decoder.JSONDecodeError
+            raise ValueError # raise ValueError to abstract away simplejson
+
+        return retval
+
 class MusicBrainzHandlerError(Exception):
     pass
 
@@ -161,36 +202,63 @@ class MusicBrainzHandler():
 
         return artist_mbid
 
-    def get_release_ids(self, artist_mbid):
+    def __is_valid_release_group(self, release_group, artist_mbid):
         """
-        Gets the releases for the given artist
+        Validates a release group against an artist's mbid
 
-        The returned list does not contain any album_ids that share the same name
+        :param      release_group   json contents of a single entry of 'release-group'
+        :param      artist_mbid     MBID of the artist whose releases to filter by
 
-        :param      artist_mbid     MBID of the artist whose releases to get
-
-        :returns    list of release_ids, empty list if none found
+        :returns    True if the release group is valid for the given artist, otherwise False
         :raises     MusicBrainzHandlerError on any caught exception
-        :raises     TypeError if the arg is not a string
+        :raises     TypeError if the args are not strings
         """
 
-        if type(artist_mbid) != str:
-            raise TypeError("Unsupported type for arg 'artist_mbid'")
+        # If the artist_mbid is not in the artist credits for the release group, it's not valid
+        is_same_artist_id = False
+        for artist_credit in release_group['artist-credit']:
+            if artist_mbid == artist_credit['artist']['id']:
+                is_same_artist_id = True
+
+        if is_same_artist_id == False:
+            return False
+
+        return True
+
+    def get_release_ids(self, artist_name, artist_mbid):
+        """
+        Gets the artist's release_ids
+
+        Using release-groups we get unique releases by picking the first index release in the
+        'releases' array of the response.
+
+        :param      artist_name     name of the artist to search for
+        :param      artist_mbid     MBID of the artist whose releases to filter by
+
+        :returns    release_ids for the artist
+        :raises     MusicBrainzHandlerError on any caught exception
+        :raises     TypeError if the args are not strings
+        """
+
+        if type(artist_name) != str and type(artist_mbid) != str:
+            raise TypeError("Unsupported type for args 'artist_name' and 'artist_mbid'")
+
+        releases = {}
 
         try:
-            releases_json = self.client.get_artist_with_releases(artist_mbid)
+            # A single search returns 100 results, but with compilation and live albums removed from the equation, it is very
+            # likely that all of the releases are included in the results.
+            # TODO: browse results by using an offset until all results have been checked
+            artist_json = self.client.search_artist_release_groups(artist_name, exclude_compilation=True, exclude_live=True, exclude_remix=True, exclude_demo=True)
 
-            releases = {}
-
-            for release in releases_json['releases']:
-                title = release['title'].lower()
-                if title not in releases.keys():
-                    # Only add unique album names
-                    releases[title] = release['id']
+            for release_group in artist_json['release-groups']:
+                if self.__is_valid_release_group(release_group, artist_mbid):
+                    title = release_group['title'].lower()
+                    releases[title] = release_group['releases'][0]['id']
         except:
             raise MusicBrainzHandlerError
 
-        log.info("Found releases " + str(list(releases.keys())) + " for artist_mbid " + artist_mbid)
+        log.info("Found releases " + str(list(releases.keys())) + " for artist_name " + artist_name)
 
         return list(releases.values())
 
